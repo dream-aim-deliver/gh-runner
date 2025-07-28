@@ -8,52 +8,40 @@ This project provides a Dockerized GitHub Actions **self-hosted runner** that re
 - GitHub Actions self-hosted runner in a Docker container
 - Auto-registers and connects to a GitHub repository or org
 - Custom runner labels and naming
-- Graceful shutdown with deregistration
 - Lightweight Ubuntu-based image
+- Runners with docker-in-docker
 
 
 ## 🛠️ Requirements
 
 - Docker Engine (v20+)
-- A GitHub **Personal Access Token (PAT)** to generate registration tokens
 - A repository or organization to attach the runner to
 
 
 ## 🧪 Usage
 
-### 1. Build the image
+### 1. Build the images
+
+You'll build an image per runner, and will need a registration token per runner. The setup script will create these programatically, and for this you'll need an organization PAT with read and write permissions for runners.
+Once you have it, set up an `.env` file following the `.env.template`:
+
+- GH_ORG_PAT: the PAT of your organizations with read and write permissions on runners
+- ORG_NAME: your GitHub organization name
+- REPO_URL: your GitHub organization URL
+- RUNNER_LABELS: needs to include "self-hosted"; others recommended are "docker", "linux", and "org-gh-runner". This gives us `self-hosted,docker,linux,org-gh-runner`
+- RUNNER_COUNT: the amount of runners that will be created. At least 5 are recommended
+- DOCKER_GID: the docker group ID of the host machine
+
+### 2. Run the containers
+
+You're now ready to start the containers in detached mode. You can also re-execute this command if the container stops:
 
 ```bash
-docker build -t gh-runner .
+docker compose up -d
 ```
 
-### 2. Generate a runner token
-
-#### Option A: Manual (via GitHub UI)
-
-1. Go to your GitHub **repository or organization**
-2. Navigate to: `Settings → Actions → Runners`
-3. Click **"New self-hosted runner"**
-4. Copy the registration **URL** and **token**
-5. Then run the following command, this will register the runner in GitHub (only done once). Take note of your labels, because you can use them in the workflow YAML files to decide which self-hosted runners are user:
-
-```sh
-docker run -d --rm -it \
-  -v gh-runner-data:/runner \
-  -e REPO_URL="https://github.com/org-name" \
-  -e RUNNER_TOKEN="token" \
-  -e RUNNER_NAME="gh-runner" \
-  -e RUNNER_LABELS="self-hosted,docker,linux,my-gh-runner" \
-  gh-runner
-```
-
-### 3. Run the container
-
-If the container stops, you can run it again with the following command:
-
+To remove, simply run
 ```bash
-docker run -d --name gh-runner --restart always \
-  -v gh-runner-data:/runner \
-  --entrypoint /runner/run.sh \
-  gh-runner
+docker compose down --volumes --remove-orphans
 ```
+
