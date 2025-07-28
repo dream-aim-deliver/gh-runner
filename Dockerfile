@@ -41,6 +41,4 @@ USER runneruser
 # Add entrypoint
 COPY entrypoint.sh .
 
-RUN chmod +x entrypoint.sh
-
 ENTRYPOINT ["/runner/entrypoint.sh"]
