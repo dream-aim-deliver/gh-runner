@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Set environment variables
-ENV RUNNER_VERSION=2.315.0
+ENV RUNNER_VERSION=2.326.0
 ENV RUNNER_HOME=/runner
 
 # Create a user to run the runner safely
