@@ -27,7 +27,6 @@ This project provides a Dockerized GitHub Actions **self-hosted runner** that re
 docker build -t gh-runner .
 ```
 
-
 ### 2. Generate a runner token
 
 #### Option A: Manual (via GitHub UI)
@@ -36,34 +35,25 @@ docker build -t gh-runner .
 2. Navigate to: `Settings → Actions → Runners`
 3. Click **"New self-hosted runner"**
 4. Copy the registration **URL** and **token**
+5. Then run the following command, this will register the runner in GitHub (only done once). Take note of your labels, because you can use them in the workflow YAML files to decide which self-hosted runners are user:
 
-#### Option B: Automatically (via GitHub API)
-
-You can script this using a GitHub PAT if needed.
-
----
-
-### 3. Run the container
-
-```bash
-docker run -d \
-  --name gh-runner \
-  -e REPO_URL="https://github.com/youruser/yourrepo" \
-  -e RUNNER_TOKEN="your_registration_token" \
-  -e RUNNER_LABELS="docker,linux" \
+```sh
+docker run -d --rm -it \
+  -v gh-runner-data:/runner \
+  -e REPO_URL="https://github.com/org-name" \
+  -e RUNNER_TOKEN="token" \
+  -e RUNNER_NAME="gh-runner" \
+  -e RUNNER_LABELS="self-hosted,docker,linux,my-gh-runner" \
   gh-runner
 ```
 
-Optional:
+### 3. Run the container
 
-* `RUNNER_NAME` – Custom name for the runner (defaults to container hostname)
-* `RUNNER_LABELS` – Comma-separated custom labels (default: none)
+If the container stops, you can run it again with the following command:
 
----
-
-## 📚 Resources
-
-* [GitHub Actions Runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
-* [GitHub API – Register a runner](https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28)
-* [Docker Hub](https://hub.docker.com)
-
+```bash
+docker run -d --name gh-runner --restart always \
+  -v gh-runner-data:/runner \
+  --entrypoint /runner/run.sh \
+  gh-runner
+```
