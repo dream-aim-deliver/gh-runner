@@ -1,0 +1,27 @@
+Vagrant.configure("2") do |config|
+  # Base Ubuntu image
+  config.vm.box = "cloud-image/ubuntu-24.04"  # Ubuntu 22.04 LTS; replace if newer
+  config.vm.box_version = "20250704.0.0"
+  config.ssh.insert_key = false
+
+  # Allow external override of number of runners
+  count = (ENV['GH_RUNNER_COUNT'] || 1).to_i
+
+  (1..count).each do |i|
+    config.vm.define "gh-runner-#{i}" do |node|
+      node.vm.hostname = "gh-runner-#{i}"
+      node.vm.network "private_network", ip: "192.168.56.#{100 + i}"
+
+      # Provider configuration
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = 4096
+        vb.cpus = 2
+        vb.name = "gh-runner-#{i}"
+      end
+
+      # Provision with initialization script triggered at first boot
+      node.vm.provision "shell", name: "initialize runner", path: "init-runner.sh", env: { "RUNNER_INDEX" => i.to_s }
+    end
+  end
+end
+
