@@ -4,15 +4,6 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = ">= 0"
   config.ssh.insert_key = false
 
-  # Allow external override of number of runners
-  required_env_vars = ['RUNNER_COUNT', 'REPO_URL', 'RUNNER_LABELS', 'GH_ORG_PAT', 'ORG_NAME', 'RUNNER_VERSION']
-
-  missing_vars = required_env_vars.select { |var| ENV[var].to_s.empty? }
-
-  if missing_vars.any?
-    abort "❌ Missing required environment variables: #{missing_vars.join(', ')}. Please set them before running Vagrant."
-  end
-
   count = (ENV['RUNNER_COUNT']).to_i
 
   (1..count).each do |i|

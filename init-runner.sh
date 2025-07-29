@@ -52,12 +52,14 @@ sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 sudo apt-get update
-sudo apt-get install -y docker-ce-cli
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl enable docker
+sudo systemctl start docker
 
 # Add runneruser to docker group
 sudo groupadd docker || true
 sudo usermod -aG docker runneruser
-
+sudo -u runneruser docker info || { echo "❌ Docker is not running or accessible by runneruser"; exit 1; }
 
 # === Create token for the runner ===
 echo "🧹 Checking for existing runner named $runner_name..."
