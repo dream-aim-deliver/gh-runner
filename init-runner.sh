@@ -109,4 +109,6 @@ sudo -u runneruser bash <<EOF
     rm actions-runner.tar.gz
 
     ./config.sh --unattended --url "${REPO_URL}" --token "${token}" --name "$runner_name" --labels ${RUNNER_LABELS}
+
+    nohup ./run.sh &> /home/runneruser/runner/runner.log &
 EOF

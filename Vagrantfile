@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
   # Base Ubuntu image
-  config.vm.box = "cloud-image/ubuntu-24.04"  # Ubuntu 22.04 LTS; replace if newer
-  config.vm.box_version = "20250704.0.0"
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.box_version = ">= 0"
   config.ssh.insert_key = false
 
   # Allow external override of number of runners

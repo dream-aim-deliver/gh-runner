@@ -1,28 +1,28 @@
-# GitHub Actions Self-Hosted Runner (Dockerized)
+# GitHub Actions Self-Hosted Runner
 
-This project provides a Dockerized GitHub Actions **self-hosted runner** that registers with a repository or organization and runs jobs inside a secure containerized environment.
+This project provides GitHub Actions **self-hosted runners** in virtual machines that registers with a repository or organization and runs jobs inside a secure containerized environment.
 
 
 ## 🚀 Features
 
-- GitHub Actions self-hosted runner in a Docker container
+- GitHub Actions self-hosted runner in a Virtual Machine
 - Auto-registers and connects to a GitHub repository or org
 - Custom runner labels and naming
 - Lightweight Ubuntu-based image
-- Runners with docker-in-docker
+- Runners have basic tools like docker and gh
 
 
 ## 🛠️ Requirements
 
-- Docker Engine (v20+)
+- Vagrant
 - A repository or organization to attach the runner to
 
 
 ## 🧪 Usage
 
-### 1. Build the images
+### 1. Get the necessary ENV variables
 
-You'll build an image per runner, and will need a registration token per runner. The setup script will create these programatically, and for this you'll need an organization PAT with read and write permissions for runners.
+You'll build a VM per runner, and will need a registration token per runner. The setup script will create these programatically, and for this you'll need an organization PAT with read and write permissions for runners.
 Once you have it, set up an `.env` file following the `.env.template`:
 
 - GH_ORG_PAT: the PAT of your organizations with read and write permissions on runners
@@ -30,18 +30,20 @@ Once you have it, set up an `.env` file following the `.env.template`:
 - REPO_URL: your GitHub organization URL
 - RUNNER_LABELS: needs to include "self-hosted"; others recommended are "docker", "linux", and "org-gh-runner". This gives us `self-hosted,docker,linux,org-gh-runner`
 - RUNNER_COUNT: the amount of runners that will be created. At least 5 are recommended
-- DOCKER_GID: the docker group ID of the host machine
+- RUNNER_VERSION: the version of the github runner
 
-### 2. Run the containers
 
-You're now ready to start the containers in detached mode. You can also re-execute this command if the container stops:
+### 2. Setup the VMs
+
+You're now ready to start the virtual machines:
 
 ```bash
-docker compose up -d
+./setup
 ```
 
-To remove, simply run
+If you have a VM name-clashing problem, and don't mind destroying old VMs, you can pass the `-d` argument to the setup script:
+
 ```bash
-docker compose down --volumes --remove-orphans
+./setup -d
 ```
 

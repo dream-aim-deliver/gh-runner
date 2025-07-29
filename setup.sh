@@ -27,18 +27,27 @@ for var in GH_ORG_PAT ORG_NAME REPO_URL RUNNER_LABELS RUNNER_COUNT RUNNER_VERSIO
     echo "❌ $var is not set in the .env file."
     exit 1
   fi
+  export "$var"
 done
 echo "✅ Done!"
 
-case "$1" in
-  -h | --help)
-  usage
-  exit 1
-  ;;
+DESTROY=
 
+case "${1-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
   -d | --destroy)
-  DESTROY="true"
-  ;;
+    DESTROY="true"
+    ;;
+  "")
+    ;;
+  *)
+    echo "❌ Unknown argument: $1"
+    usage
+    exit 1
+    ;;
 esac
 
 
